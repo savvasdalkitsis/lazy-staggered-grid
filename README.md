@@ -8,7 +8,7 @@ It automatically handles the allocation of items to the correct column.
 
 ## Example
 
-<img src=sample/staggered.gif width=800 />
+<img src=sample/staggered.gif width=300 />
 
 ## Usage
 
