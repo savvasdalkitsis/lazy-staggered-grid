@@ -25,3 +25,5 @@ LazyStaggeredGrid(columnCount = 2) {
     }
 }
 ```
+
+Note that the library is not yet published as an AAR but you can copy paste this [file](lazystaggeredgrid/src/main/kotlin/com/savvasdalkitsis/lazystaggeredgrid/LazyStaggeredGrid.kt) into your project and it should work
