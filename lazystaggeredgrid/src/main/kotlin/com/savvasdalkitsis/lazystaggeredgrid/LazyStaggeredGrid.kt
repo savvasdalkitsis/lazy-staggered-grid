@@ -30,6 +30,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -41,7 +42,7 @@ fun LazyStaggeredGrid(
     val states: Array<LazyListState> = (0 until columnCount)
         .map { rememberLazyListState() }
         .toTypedArray()
-    val scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope { Dispatchers.Main.immediate }
     val scroll = rememberScrollableState { delta ->
         scope.launch { states.forEach {  it.scrollBy(-delta) }}
         delta
