@@ -14,7 +14,8 @@
  */
 package com.savvasdalkitsis.lazystaggeredgrid
 
-import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
@@ -41,43 +42,28 @@ fun LazyStaggeredGrid(
         .map { rememberLazyListState() }
         .toTypedArray()
     val scope = rememberCoroutineScope()
-
-    val scrollConnections: Array<NestedScrollConnection> = (0 until columnCount)
-        .map { index ->
-            remember {
-                object : NestedScrollConnection {
-                    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                        val delta = available.y
-                        scope.launch {
-                            states.forEachIndexed { stateIndex, state ->
-                                if (stateIndex != index) {
-                                    state.scrollBy(-delta)
-                                }
-                            }
-                        }
-                        return Offset.Zero
-                    }
-
-                }
-            }
-        }
-        .toTypedArray()
-
+    val scroll = rememberScrollableState { delta ->
+        scope.launch { states.forEach {  it.scrollBy(-delta) }}
+        delta
+    }
     val gridScope = LazyStaggeredGridScope(columnCount)
     content(gridScope)
 
-    Row {
-        for (index in 0 until columnCount) {
-            LazyColumn(
-                contentPadding = contentPadding,
-                state = states[index],
-                modifier = Modifier
-                    .nestedScroll(scrollConnections[index])
-                    .weight(1f)
-            ) {
-                for ((key, itemContent) in gridScope.items[index]) {
-                    item(key = key) {
-                        itemContent()
+    Box(modifier = Modifier
+        .scrollable(scroll, Orientation.Vertical, flingBehavior = ScrollableDefaults.flingBehavior())
+    ) {
+        Row {
+            for (index in 0 until columnCount) {
+                LazyColumn(
+                    userScrollEnabled = false,
+                    contentPadding = contentPadding,
+                    state = states[index],
+                    modifier = Modifier.weight(1f)
+                ) {
+                    for ((key, itemContent) in gridScope.items[index]) {
+                        item(key = key) {
+                            itemContent()
+                        }
                     }
                 }
             }
